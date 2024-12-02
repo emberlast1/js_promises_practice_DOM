@@ -24,19 +24,44 @@ const firstPromise = new Promise((resolve, reject) => {
 });
 
 const secondPromise = new Promise((resolve) => {
-  document.addEventListener('click', (e) => {
-    if (e.button === 0 || e.button === 2) {
-      resolve('Second promise was resolved');
+  document.addEventListener('click', () => {
+    resolve('Second promise was resolved');
+  });
+
+  document.addEventListener('contextmenu', () => {
+    resolve('Second promise was resolved');
+  });
+});
+
+const thirdPromise = new Promise((resolve) => {
+  let rightClick = false;
+  let leftClick = false;
+
+  document.addEventListener('click', () => {
+    leftClick = true;
+
+    if (leftClick && rightClick) {
+      resolve('Third promise was resolved');
     }
   });
 
-  // document.addEventListener('contextmenu', () => {
-  //   resolve(succesMessage('Second'));
-  // });
+  document.addEventListener('contextmenu', () => {
+    rightClick = true;
+
+    if (leftClick && rightClick) {
+      resolve('Third promise was resolved');
+    }
+  });
 });
 
 firstPromise
   .then((message) => notification(message, 'success'))
   .catch((message) => notification(message, 'error'));
 
-secondPromise.then((message) => notification(message, 'success'));
+secondPromise
+  .then((message) => notification(message, 'success'))
+  .catch((message) => notification(message, 'error'));
+
+thirdPromise
+  .then((message) => notification(message, 'success'))
+  .catch((message) => notification(message, 'error'));
