@@ -1,43 +1,42 @@
+/* eslint-disable prefer-promise-reject-errors */
 'use strict';
 
 const body = document.querySelector('body');
 
-function succesMessage(promiseNumber) {
-  return `${promiseNumber} promise was resolved`;
-}
-
-function rejectMessage(promiseNumber) {
-  return `${promiseNumber} promise was rejected`;
-}
-
-const successHandler = (message) => {
+const notification = (message, type) => {
   const div = document.createElement('div');
 
   div.setAttribute('data-qa', 'notification');
-  div.classList.add('success');
-  div.innerText = `${succesMessage(message)}`;
+  div.classList.add(type === 'success' ? 'success' : 'error');
+  div.innerText = message;
 
-  body.append(div);
-};
-
-const errorHandler = (message) => {
-  const div = document.createElement('div');
-
-  div.setAttribute('data-qa', 'notification');
-  div.classList.add('error');
-  div.innerText = `${rejectMessage(message)}`;
-
-  body.append(div);
+  body.appendChild(div);
 };
 
 const firstPromise = new Promise((resolve, reject) => {
   document.addEventListener('click', () => {
-    resolve(succesMessage('First'));
+    resolve('First promise was resolved');
   });
 
   setTimeout(() => {
-    reject(new Error(rejectMessage('First'), 3000));
-  });
+    reject('First promise was rejected');
+  }, 3000);
 });
 
-firstPromise.then(successHandler('First')).catch(errorHandler('First'));
+const secondPromise = new Promise((resolve) => {
+  document.addEventListener('click', (e) => {
+    if (e.button === 0 || e.button === 2) {
+      resolve('Second promise was resolved');
+    }
+  });
+
+  // document.addEventListener('contextmenu', () => {
+  //   resolve(succesMessage('Second'));
+  // });
+});
+
+firstPromise
+  .then((message) => notification(message, 'success'))
+  .catch((message) => notification(message, 'error'));
+
+secondPromise.then((message) => notification(message, 'success'));
